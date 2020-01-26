@@ -10,38 +10,40 @@
 
 <body>
     <div class="feedback">
-        <div class="feedback__container">
-            <h2 class="feedback__title">Обратная связь</h2>
-            <form class="feedback__form" id="form">
-                <label class="field">
+        <!-- <div class="feedback__container"> -->
+        <h2 class="feedback__title">Обратная связь</h2>
+        <form class="feedback__form" id="form">
+            <label class="field">
                 <div class="field__title">Имя</div>
                 <input name="name" class="field__input" required>
                 <div class="field__error" id="name-error"></div>
             </label>
 
-                <label class="field">
+            <label class="field">
                 <div class="field__title">Телефон</div>
                 <input name="phone" class="field__input">
+                <div class="field__error" id="phone-error"></div>
             </label>
 
-                <label class="field">
+            <label class="field">
                 <div class="field__title">Эл. почта</div>
                 <input name="email" class="field__input">
+                <div class="field__error" id="email-error"></div>
             </label>
 
-                <label class="field field-text">
+            <label class="field field-text">
                 <div class="field__title">Сообщение</div>
                 <textarea name="message" class="field__textarea" required></textarea>
                 <div class="field__error" id="message-error"></div>
             </label>
 
-                <div class="privacy-policy">
-                    Отправляя форму вы соглашаетесь с
-                    <a href="" class="privacy-policy__link">пользовательским соглашением</a> и <a href="" class="privacy-policy__link">политикой конфиденциальности</a>
-                </div>
+            <div class="privacy-policy">
+                Отправляя форму вы соглашаетесь с
+                <a href="" class="privacy-policy__link">пользовательским соглашением</a> и <a href="" class="privacy-policy__link">политикой конфиденциальности</a>
+            </div>
 
-                <button class="feedback-button" id="send-message">Отправить</button>
-            </form>
-        </div>
+            <button class="feedback-button" id="send-message">Отправить</button>
+        </form>
+        <!-- </div> -->
     </div>
 </body>
