@@ -25,7 +25,6 @@ class Validator {
     init() {
         this.form = document.getElementById(this.formId);
         this.requirements = Object.entries(requirements);
-        this.validateForm();
     }
 
     validateForm() {
@@ -87,12 +86,17 @@ class Validator {
 }
 
 window.onload = function() {
-
     let sendButton = document.getElementById('send-message');
+    const validator = new Validator({ formId: 'form' });
+    validator.init();
+
+    IMask(document.getElementsByName('phone')[0], {
+        mask: '+{7} (000) 000-00-00',
+        lazy: false
+    });
 
     sendButton.addEventListener('click', () => {
-        const validator = new Validator({ formId: 'form' });
-        validator.init();
+        validator.validateForm();
     });
 
 }
