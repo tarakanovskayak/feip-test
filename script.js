@@ -1,62 +1,98 @@
-console.log('loh pidr');
-
-function validateForm() {
-    validateName();
-    validateMessage();
-    validateEmailOrPhoneIsNotEmpty();
-}
-
-function validateName() {
-    let nameInput = document.getElementsByName("name")[0];
-    validateRequiredField(nameInput, 'name-error');
-}
-
-function validateMessage() {
-    let messageTextarea = document.getElementsByName("message")[0];
-    validateRequiredField(messageTextarea, 'message-error');
-}
-
-function validateRequiredField(input, idErrorMessageContainer) {
-    input.classList.remove('invalid');
-    let errorContainer = document.getElementById(idErrorMessageContainer);
-    errorContainer.innerHTML = '';
-    if (input.validity.valueMissing) {
-        input.classList.add('invalid');
-        errorContainer.innerHTML = 'Поле обязательно для заполнения.';
+const requirements = {
+    name: {
+        required: [true, 'Поле обязательно для заполнения.']
+    },
+    message: {
+        required: [true, 'Поле обязательно для заполнения.']
+    },
+    phone: {
+        required: false,
+        regExp: [/^\+7 \(\d{3}\) \d{3}\-\d{2}\-\d{2}$/, 'Номер телефона должен соответствовать формату: +7 (123) 456-78-90.'],
+        pair: ['email', 'Поле Эл.почта или Телефон должны быть заполнены.']
+    },
+    email: {
+        required: false,
+        regExp: [/^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/i, 'Эл.почта должна соответствовать формату: example@email.com.'],
+        pair: ['phone', 'Поле Эл.почта или Телефон должны быть заполнены.']
     }
-}
+};
 
-function validateEmailOrPhoneIsNotEmpty() {
-    let email = document.getElementsByName("email")[0];
-    let phone = document.getElementsByName("phone")[0];
+class Validator {
+    constructor(args) {
+        this.formId = args.formId
+    }
 
-    email.classList.remove('invalid');
-    phone.classList.remove('invalid');
+    init() {
+        this.form = document.getElementById(this.formId);
+        this.requirements = Object.entries(requirements);
+        this.validateForm();
+    }
 
-    let emailErrorContainer = document.getElementById('email-error');
-    let errorContainer = document.getElementById('phone-error');
+    validateForm() {
+        this.requirements.forEach(item => {
+            const field = this.getField(item[0]);
+            const validateResult = this.validateField(field, item[1]);
+            if (validateResult && !validateResult.result) {
+                this.showError(field, validateResult.message);
+            }
+        });
+    }
 
-    emailErrorContainer.innerHTML = '';
-    errorContainer.innerHTML = '';
+    validateField(element, requirements) {
+        element.classList.remove('invalid');
+        element.nextSibling.nextSibling.innerHTML = '';
+        if (requirements.required) {
+            const passed = this.checkRequired(element);
+            if (!passed) {
+                return { result: false, message: requirements.required[1] };
+            }
+        }
+        if (requirements.pair) {
+            const passed = this.checkPair(element, this.getField(requirements.pair[0]));
+            if (!passed) {
+                return { result: false, message: requirements.pair[1] };
+            }
+        }
+        if (requirements.regExp) {
+            if (!(requirements.pair && !element.value)) {
+                const passed = this.checkRegExp(element, requirements.regExp[0]);
+                if (!passed) {
+                    return { result: false, message: requirements.regExp[1] };
+                }
+            }
+        }
+        return { result: true, message: '' };
+    }
 
-    if (!email.value && !phone.value) {
-        email.classList.add('invalid');
-        phone.classList.add('invalid');
+    checkRequired(element) {
+        return !element.validity.valueMissing;
+    }
 
-        emailErrorContainer.innerHTML = 'Поле Эл.почта или Телефон должны быть заполнены.';
-        errorContainer.innerHTML = 'Поле Эл.почта или Телефон должны быть заполнены.';
+    checkRegExp(element, regExp) {
+        return !!element.value.match(regExp);
+    }
+
+    checkPair(element, pairElement) {
+        return !!element.value || !!pairElement.value;
+    }
+
+    showError(element, errorMessage) {
+        element.classList.add('invalid');
+        element.nextSibling.nextSibling.innerHTML = errorMessage;
+    }
+
+    getField(name) {
+        return document.getElementsByName(name)[0];
     }
 }
 
 window.onload = function() {
 
     let sendButton = document.getElementById('send-message');
-    let form = document.getElementById('form');
 
     sendButton.addEventListener('click', () => {
-        validateForm();
-
-        let messageTextarea = document.getElementsByName("email")[0];
+        const validator = new Validator({ formId: 'form' });
+        validator.init();
     });
 
 }
